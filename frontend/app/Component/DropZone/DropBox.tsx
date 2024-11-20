@@ -2,12 +2,10 @@
 
 import * as React from "react";
 import { Camera, Upload, X, Image as ImageIcon } from "lucide-react";
+import {useDataContext} from '../../Context/DataContext'
 
 export default function PhotoSelectBox() {
-  const [selectedImage, setSelectedImage] = React.useState<File | null>(null);
-  const [isCameraActive, setIsCameraActive] = React.useState<boolean>(false);
-  const [imageUrl, setImageUrl] = React.useState<string | null>(null);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const {apiUrl,selectedImage,setSelectedImage,isCameraActive, setIsCameraActive,imageUrl, setImageUrl} = useDataContext()
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -56,32 +54,32 @@ export default function PhotoSelectBox() {
     }
   };
 
-  const handleSubmitImage = () => {
+  // Handle image submission using XMLHttpRequest
+  const handleSubmitImage = async () => {
     if (selectedImage) {
       const formData = new FormData();
       formData.append("image", selectedImage);
-
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", `${apiUrl}/api/ocr`, true);
-
-      xhr.setRequestHeader("Content-Type", "multipart/form-data");
-
-      xhr.onload = function () {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          console.log("Image uploaded successfully:", xhr.responseText);
+  
+      try {
+        const response = await fetch(`${apiUrl}/api/ocr`, {
+          method: "POST",
+          body: formData,
+        });
+  
+        if (response.ok) {
+          const responseData = await response.json();
+          console.log("Image uploaded successfully:", responseData);
         } else {
-          console.error("Error in submitting image:", xhr.statusText);
+          console.error("Error in submitting image:", response.statusText);
         }
-      };
-
-      xhr.onerror = function () {
-        console.error("Request failed:", xhr.statusText);
-      };
-
-      xhr.send(formData);
+      } catch (error) {
+        console.error("Request failed:", error);
+      }
     }
   };
+  
 
+  // Start camera if active
   React.useEffect(() => {
     if (isCameraActive) {
       navigator.mediaDevices
