@@ -69,10 +69,38 @@ def generate_content():
         }
         correct_answer = output_lines[5].replace("Correct Answer: ", "").strip()
 
+        # Format the data for the Google Forms API
+        form_data = {
+            "requests": [
+                {
+                    "createItem": {
+                        "item": {
+                            "title": question,
+                            "questionItem": {
+                                "question": {
+                                    "questionId": "question-1",
+                                    "questionType": "RADIO",
+                                    "options": [
+                                        {"value": options["a"]},
+                                        {"value": options["b"]},
+                                        {"value": options["c"]},
+                                        {"value": options["d"]}
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+
+        # Assuming you will send form_data to the Google Forms API here
+
         return jsonify({
             "question": question,
             "options": options,
-            "correct_answer": correct_answer
+            "correct_answer": correct_answer,
+            "form_data": form_data  # This is the data to be sent to Google Forms API
         })
 
     except Exception as e:
