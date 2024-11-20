@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import logging
 import google.generativeai as genai
+from flask_cors import CORS 
 
 # Load environment variables
 load_dotenv()
@@ -18,6 +19,8 @@ genai.configure(api_key=API_KEY)
 
 # Initialize Flask app
 app = Flask(__name__)
+
+CORS(app, resources={r"/*": {"origins": ""}})
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -48,6 +51,8 @@ def generate_content():
     b) [Option B]
     c) [Option C]
     d) [Option D]
+    e) [Option E]
+    f) [Option F]
     Correct Answer: [Indicate the correct option letter, e.g., 'b']
     """
 
@@ -66,6 +71,8 @@ def generate_content():
             "b": output_lines[2].replace("b) ", "").strip(),
             "c": output_lines[3].replace("c) ", "").strip(),
             "d": output_lines[4].replace("d) ", "").strip(),
+            "e": output_lines[5].replace("e) ", "").strip(),
+            "f": output_lines[6].replace("f) ", "").strip(),
         }
         correct_answer = output_lines[5].replace("Correct Answer: ", "").strip()
 
@@ -84,7 +91,9 @@ def generate_content():
                                         {"value": options["a"]},
                                         {"value": options["b"]},
                                         {"value": options["c"]},
-                                        {"value": options["d"]}
+                                        {"value": options["d"]},
+                                        {"value": options["e"]},
+                                        {"value": options["f"]}
                                     ]
                                 }
                             }
@@ -108,4 +117,4 @@ def generate_content():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=3000, debug=True)
