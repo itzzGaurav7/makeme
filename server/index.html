@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gemini Prompt Processor</title>
+</head>
+<body>
+    <h1>Gemini Prompt Processor</h1>
+    <form method="POST">
+        <label for="prompt">Enter your prompt:</label>
+        <input type="text" id="prompt" name="prompt">
+        <button type="submit">Submit</button>
+    </form>
+    {% if response %}
+        <p>Response:</p>
+        <p>{{ response }}</p>
+    {% endif %}
+</body>
+</html>
