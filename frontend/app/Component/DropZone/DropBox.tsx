@@ -99,10 +99,10 @@ export default function PhotoSelectBox() {
   }, [isCameraActive]);
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-lg rounded-xl">
+    <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-900 shadow-lg rounded-xl">
       <div 
-        className="w-full h-48 border-dashed border-2 border-indigo-300 
-        flex items-center justify-center cursor-pointer hover:bg-indigo-50 
+        className="w-full h-48 border-dashed border-2 border-indigo-300 dark:border-indigo-700
+        flex items-center justify-center cursor-pointer hover:bg-indigo-50 dark:hover:bg-gray-800
         transition-colors duration-300 relative"
         onClick={handleImageSelect}
       >
@@ -125,9 +125,9 @@ export default function PhotoSelectBox() {
             </button>
           </>
         ) : (
-          <div className="flex flex-col items-center text-indigo-600">
+          <div className="flex flex-col items-center text-indigo-600 dark:text-indigo-400">
             <ImageIcon size={48} />
-            <span className="mt-2 text-sm">Click to select a photo</span>
+            <span className="mt-2 text-sm dark:text-gray-300">Click to select a photo</span>
           </div>
         )}
       </div>
@@ -152,7 +152,7 @@ export default function PhotoSelectBox() {
       </div>
 
       {isCameraActive && (
-        <div className="relative mt-4 bg-gray-100 rounded-lg overflow-hidden">
+        <div className="relative mt-4 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
           <video
             id="video"
             width="100%"
@@ -189,8 +189,8 @@ export default function PhotoSelectBox() {
         className={`mt-4 w-full flex items-center justify-center px-4 py-2 rounded-md 
         transition-colors duration-300 
         ${!selectedImage 
-          ? "bg-gray-300 cursor-not-allowed text-gray-500" 
-          : "bg-indigo-500 text-white hover:bg-indigo-600"}`}
+          ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed text-gray-500 dark:text-gray-400" 
+          : "bg-indigo-500 text-white hover:bg-indigo-600 dark:bg-indigo-700 dark:hover:bg-indigo-600"}`}
       >
         <Upload size={20} className="mr-2" /> Submit Image
       </button>
