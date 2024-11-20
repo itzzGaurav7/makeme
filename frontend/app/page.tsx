@@ -1,20 +1,13 @@
+"use client"
 import Image from "next/image";
-import * as React from "react"
-import { Moon, MoonIcon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
- 
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { ModeToggle } from "./Component/ModeToggle";
+import DropZone from './Component/DropZone/DropBox'
 
 export default function Home() {
   return (
     <div>
-      
+      <ModeToggle/>
+      <DropZone/>
     </div>
   );
 }
