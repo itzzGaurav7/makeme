@@ -41,13 +41,13 @@ def ocr():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
 
-        # # Perform OCR
-        # results = reader.readtext(file_path)
-        # extracted_text = [{"text": text, "confidence": confidence} for _, text, confidence in results]
+        # Perform OCR
+        results = reader.readtext(file_path)
+        extracted_text = [{"text": text, "confidence": confidence} for _, text, confidence in results]
 
-        # # Return results
-        # return jsonify({'results': extracted_text}), 200
-        return jsonify({'results': "this is sick"}), 200
+        # Return results
+        return jsonify({'results': extracted_text}), 200
+        # return jsonify({'results': "this is sick"}), 200
     except Exception as e:
         return jsonify({'error': "this is exception"}), 500
 
