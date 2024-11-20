@@ -6,8 +6,12 @@ import DropZone from './Component/DropZone/DropBox'
 export default function Home() {
   return (
     <div>
-      <ModeToggle/>
-      <DropZone/>
+      <div className="absolute right-5 top-5">
+        <ModeToggle/>
+      </div>
+      <div className="relative top-10">
+        <DropZone/>
+      </div>
     </div>
   );
 }
