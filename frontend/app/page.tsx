@@ -1,7 +1,6 @@
 "use client";
-import Image from "next/image";
 import { ModeToggle } from "./Component/ModeToggle";
-import DropZone from "./Component/DropZone/DropBox";
+import DropBox from "./Component/DropBox";
 import Sidebar from "./Component/Sidebar";
 import { DataProvider } from "./Context/DataContext";
 
@@ -16,7 +15,7 @@ export default function Home() {
           <Sidebar />
         </div>
         <div className="relative top-10">
-          <DropZone />
+          <DropBox />
         </div>
       </div>
     </DataProvider>

@@ -8,7 +8,17 @@ import requests
 from werkzeug.utils import secure_filename
 import os
 
+app = Flask(__name__)
+# Enable CORS for all origins, or specify your own origins
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+# Set upload folder
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Initialize EasyOCR Reader
+reader = easyocr.Reader(['en'])  # Add other languages if needed
 
 load_dotenv()
 
@@ -21,22 +31,16 @@ if not API_KEY:
 # Configure the GenAI client
 genai.configure(api_key=API_KEY)
 
-
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def generate_content():
+def generate_content(raw_text):
     """
-    API endpoint to generate a multiple-choice question using Google Generative AI.
-    Expects a JSON payload with a "raw_text" field.
+    Function to generate a multiple-choice question using Google Generative AI.
     """
-    data = request.get_json()
-
-    if not data or 'raw_text' not in data:
+    if not raw_text:
         return jsonify({"error": "Invalid request. 'raw_text' field is required."}), 400
-
-    raw_text = data['raw_text']
 
     # Create the prompt template
     prompt = f"""
@@ -58,7 +62,7 @@ def generate_content():
 
     try:
         # Initialize the model
-        model = genai.GenerativeModel("gemini-1.5-flash-8b")
+        model = genai.GenerativeModel("gemini-1.5-pro")
         
         # Generate response
         response = model.generate_content(prompt)
@@ -76,63 +80,20 @@ def generate_content():
         }
         correct_answer = output_lines[5].replace("Correct Answer: ", "").strip()
 
-        # Format the data for the Google Forms API
-        form_data = {
-            "requests": [
-                {
-                    "createItem": {
-                        "item": {
-                            "title": question,
-                            "questionItem": {
-                                "question": {
-                                    "questionId": "question-1",
-                                    "questionType": "RADIO",
-                                    "options": [
-                                        {"value": options["a"]},
-                                        {"value": options["b"]},
-                                        {"value": options["c"]},
-                                        {"value": options["d"]},
-                                        {"value": options["e"]},
-                                        {"value": options["f"]}
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                }
-            ]
-        }
-
-        # Assuming you will send form_data to the Google Forms API here
-
-        return jsonify({
+        return {
             "question": question,
             "options": options,
-            "correct_answer": correct_answer,
-            "form_data": form_data  # This is the data to be sent to Google Forms API
-        })
+            "correct_answer": correct_answer
+        }
 
     except Exception as e:
         logging.error(f"Error: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-# Initialize Flask app
-app = Flask(__name__)
-# Enable CORS for all origins, or specify your own origins
-CORS(app, resources={r"/api/*": {"origins": "*"}})
-
-# Set upload folder
-UPLOAD_FOLDER = 'uploads'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Initialize EasyOCR Reader
-reader = easyocr.Reader(['en'])  # Add other languages if needed
-
+        return {"error": str(e)}
 
 
 @app.route('/api/ocr', methods=['POST'])
 def ocr():
+    print("Hitting OCR")
     # Check if an image file is provided
     if 'image' not in request.files:
         return jsonify({'error': 'No image file provided'}), 400
@@ -148,22 +109,27 @@ def ocr():
         file.save(file_path)
 
         # Perform OCR
-       # Perform OCR
         results = reader.readtext(file_path)
         extracted_text = [{"text": text, "confidence": confidence} for _, text, confidence in results]
 
         # Join all extracted text into a single string
         extracted_text_str = " ".join([text for _, text, _ in results])
 
-        print(extracted_text_str)
+        print(f"Extracted text: {extracted_text_str}")
 
-        
-        server_response = generate_content(extracted_text_str)
+        # Call generate_content to create a multiple-choice question
+        question_data = generate_content(extracted_text_str)
 
-        # Return the response from the other server to the client
-        return jsonify(server_response), 200
+        print(f"Question data: {question_data}")
+
+        return jsonify({
+            "extracted_text": extracted_text_str,
+            "question_data": question_data
+        }), 200
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
