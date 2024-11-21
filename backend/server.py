@@ -116,6 +116,9 @@ def ocr():
         extracted_text_str = " ".join([text for _, text, _ in results])
 
         print(f"Extracted text: {extracted_text_str}")
+        print("\n")
+        print("\n")
+        print("\n")
 
         # Call generate_content to create a multiple-choice question
         question_data = generate_content(extracted_text_str)
